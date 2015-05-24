@@ -61,7 +61,8 @@ void test_snprintf(){
         "%.10f + %10.3f == %.3f",
         "\"%c%c%c\" should be equals \"%s\"",
         "%.3f + %.3f == %.3f",
-        "%.32f + %.32f == %.32f"
+        "%10.32f + %15.32f == %20.32f",
+        "DEC: %d OCT: %o HEX: %X hex: %x"
     };
 
     my_snprintf(str, str_size, formats[0], 1, 2, 3);
@@ -70,7 +71,6 @@ void test_snprintf(){
             ? "1: PASSED" : "1: FAILED");
     if (!test_res)
         printf("%s\n%s\n", std_str, str);
-//    printf("%s\n", str);
 
     my_snprintf(str, str_size, formats[1], 7, 8, 3);
     snprintf(std_str, str_size, formats[1], 7, 8, 3);
@@ -107,24 +107,11 @@ void test_snprintf(){
     if (!test_res)
         printf("%s\n%s\n", std_str, str);
 
-
-    /*
-    int byteLimit = 200;
-    my_snprintf(str, byteLimit, "Trying to append only"
-            " %d bytes: %s", byteLimit, "blah blah blah abc defg h");
-    printf("%s\n", str);
-
-    my_snprintf(str, str_size, "%s", "lold");
-    printf("%s\n", str);
-
     int ubiq_num = 123123123;
-    my_snprintf(str, str_size, "DEC: %d", ubiq_num);
-    printf("%s\n", str);
-    my_snprintf(str, str_size, "OCT: %O", ubiq_num);
-    printf("%s\n", str);
-    my_snprintf(str, str_size, "HEX: %X", ubiq_num);
-    printf("%s\n", str);
-    my_snprintf(str, str_size, "hex: %x", ubiq_num);
-    printf("%s\n", str);
-    */
+    my_snprintf(str, str_size, formats[6], ubiq_num, ubiq_num, ubiq_num, ubiq_num);
+    snprintf(std_str, str_size, formats[6],ubiq_num, ubiq_num, ubiq_num, ubiq_num);
+    printf("%s\n", (test_res = strcmp(std_str, str) == 0)
+                ? "7: PASSED" : "7: FAILED");
+    if (!test_res)
+        printf("%s\n%s\n", std_str, str);
 }
