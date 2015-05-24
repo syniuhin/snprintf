@@ -60,7 +60,8 @@ void test_snprintf(){
         "%.5d + %.3d == %.10d",
         "%.10f + %10.3f == %.3f",
         "\"%c%c%c\" should be equals \"%s\"",
-        "%.3f + %.3f == %.3f"
+        "%.3f + %.3f == %.3f",
+        "%.32f + %.32f == %.32f"
     };
 
     my_snprintf(str, str_size, formats[0], 1, 2, 3);
@@ -98,6 +99,14 @@ void test_snprintf(){
             ? "5: PASSED" : "5: FAILED");
     if (!test_res)
         printf("%s\n%s\n", std_str, str);
+
+    my_snprintf(str, str_size, formats[5], 909.9996, 1.0, 2.0);
+    snprintf(std_str, str_size, formats[5], 909.9996, 1.0, 2.0);
+    printf("%s\n", (test_res = strcmp(std_str, str) == 0)
+            ? "6: PASSED" : "6: FAILED");
+    if (!test_res)
+        printf("%s\n%s\n", std_str, str);
+
 
     /*
     int byteLimit = 200;

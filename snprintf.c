@@ -179,7 +179,7 @@ static void fmtfp (char *buffer, size_t *currlen, size_t maxlen,
     int zpadlen = 0;
     int caps = 0;
     long intpart;
-    long fracpart;
+//    long fracpart;
 
     /*
      * AIX manpage says the default is 0, but Solaris says the default
@@ -204,7 +204,7 @@ static void fmtfp (char *buffer, size_t *currlen, size_t maxlen,
      */
 //    if (max > 9)
 //        max = 9;
-    fracpart = round ((pow10(max)) * (ufvalue - intpart));
+//    fracpart = round ((pow10(max)) * (ufvalue - intpart));
 //    long double ffracpart = 10 * (ufvalue - intpart);
 //    int zafterp = 0;
 //    while (!(int)ffracpart) {
@@ -212,21 +212,10 @@ static void fmtfp (char *buffer, size_t *currlen, size_t maxlen,
 //        ffracpart *= 10;
 //    }
 
-    if (fracpart >= pow10 (max)) {
-        intpart++;
-        fracpart -= pow10 (max);
-    }
-
-    /* Convert integer part */
-    do {
-        iconvert[iplace++] =
-            (caps
-                ? "0123456789ABCDEF"
-                : "0123456789abcdef")[intpart % 10];
-        intpart = (intpart / 10);
-    } while (intpart && (iplace < MAXLEN));
-    if (iplace == MAXLEN) iplace--;
-    iconvert[iplace] = 0;
+//    if (fracpart >= pow10 (max)) {
+//        intpart++;
+//        fracpart -= pow10 (max);
+//    }
 
     /* Convert fractional part */
     //do {
@@ -251,42 +240,54 @@ static void fmtfp (char *buffer, size_t *currlen, size_t maxlen,
     fconvert[fplace] = 0;
 
     /* Round */
-//    if (ufvalue > 5) {
-//        int find = fplace;
-//        --find;
-//        int carry = 1;
-//        while (carry && find + 1) {
-//            fconvert[find]++;
-//            if (fconvert[find] > '9') {
-//                fconvert[find] = '0';
-//                carry = 1;
-//            } else {
-//                carry = 0;
-//            }
-//            --find;
-//        }
-//        if (carry) {
-//            int iind = iplace;
-//            --iind;
-//            while (carry && iind + 1) {
-//                iconvert[iind]++;
-//                if (iconvert[iind] > '9') {
-//                    iconvert[iind] = '0';
-//                    carry = 1;
-//                } else {
-//                    carry = 0;
-//                }
-//                --iind;
-//            }
-//        }
-//        if (carry) {
-//            /* move num */
+    if (ufvalue > 5) {
+        int find = fplace;
+        --find;
+        int carry = 1;
+        while (carry && find + 1) {
+            fconvert[find]++;
+            if (fconvert[find] > '9') {
+                fconvert[find] = '0';
+                carry = 1;
+            } else {
+                carry = 0;
+            }
+            --find;
+        }
+        if (carry) {
+            int iind = iplace;
+            --iind;
+            while (carry && iind + 1) {
+                iconvert[iind]++;
+                if (iconvert[iind] > '9') {
+                    iconvert[iind] = '0';
+                    carry = 1;
+                } else {
+                    carry = 0;
+                }
+                --iind;
+            }
+        }
+        if (carry) {
+           ++intpart;
+            /* move num */
 //            for (int r = (iplace + 1 < MAXLEN - 1)
 //                    ? iplace + 1 : MAXLEN - 1; r >= 0; r--)
 //                iconvert[iplace] = iconvert[iplace - 1];
 //            iconvert[0] = '1';
-//        }
-//    }
+        }
+    }
+
+    /* Convert integer part */
+    do {
+        iconvert[iplace++] =
+            (caps
+                ? "0123456789ABCDEF"
+                : "0123456789abcdef")[intpart % 10];
+        intpart = (intpart / 10);
+    } while (intpart && (iplace < MAXLEN));
+    if (iplace == MAXLEN) iplace--;
+    iconvert[iplace] = 0;
 
     /* -1 for decimal point, another -1 if we are printing a sign */
     padlen = min - iplace - max - 1 - ((signvalue) ? 1 : 0);
