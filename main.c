@@ -62,7 +62,7 @@ void test_snprintf(){
         "\"%c%c%c\" should be equals \"%s\"",
         "%.3f + %.3f == %.3f",
         "%10.32f + %15.32f == %20.32f",
-        "DEC: %d OCT: %o HEX: %X hex: %x"
+        "DEC: %d OCT: %o HEX: %X hex: %x",
     };
 
     my_snprintf(str, str_size, formats[0], 1, 2, 3);
@@ -109,9 +109,16 @@ void test_snprintf(){
 
     int ubiq_num = 123123123;
     my_snprintf(str, str_size, formats[6], ubiq_num, ubiq_num, ubiq_num, ubiq_num);
-    snprintf(std_str, str_size, formats[6],ubiq_num, ubiq_num, ubiq_num, ubiq_num);
+    snprintf(std_str, str_size, formats[6], ubiq_num, ubiq_num, ubiq_num, ubiq_num);
     printf("%s\n", (test_res = strcmp(std_str, str) == 0)
                 ? "7: PASSED" : "7: FAILED");
+    if (!test_res)
+        printf("%s\n%s\n", std_str, str);
+
+    my_snprintf(str, 10, formats[0], ubiq_num, ubiq_num, ubiq_num);
+    snprintf(std_str, 10, formats[0], ubiq_num, ubiq_num, ubiq_num);
+    printf("%s\n", (test_res = strcmp(std_str, str) == 0)
+                ? "8: PASSED" : "8: FAILED");
     if (!test_res)
         printf("%s\n%s\n", std_str, str);
 }

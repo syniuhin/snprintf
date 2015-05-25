@@ -4,14 +4,14 @@
 #include <string.h>
 #include <ctype.h>
 
-#define STATE_DEFAULT 0
-#define STATE_FLAGS   1
-#define STATE_MIN     2
-#define STATE_DOT     3
-#define STATE_MAX     4
-#define STATE_MOD     5
-#define STATE_CONV    6
-#define STATE_DONE    7
+#define STATE_DEFAULT   0
+#define STATE_FLAGS     1
+#define STATE_MIN       2
+#define STATE_DOT       3
+#define STATE_MAX       4
+#define STATE_MOD       5
+#define STATE_CONV      6
+#define STATE_DONE      7
 
 #define FLAG_MINUS      (1 << 0)
 #define FLAG_PLUS       (1 << 1)
@@ -61,7 +61,7 @@ static void fmtint (char *buffer, size_t *currlen, size_t maxlen,
         convert[place++] =
             (caps
                 ? "0123456789ABCDEF"
-                :"0123456789abcdef") [uvalue % (unsigned) base];
+                : "0123456789abcdef") [uvalue % (unsigned) base];
         uvalue = (uvalue / (unsigned) base);
     } while (uvalue && (place < MAXLEN));
     if (place == MAXLEN) place--;
@@ -179,7 +179,6 @@ static void fmtfp (char *buffer, size_t *currlen, size_t maxlen,
     int zpadlen = 0;
     int caps = 0;
     long intpart;
-//    long fracpart;
 
     /*
      * AIX manpage says the default is 0, but Solaris says the default
@@ -187,6 +186,9 @@ static void fmtfp (char *buffer, size_t *currlen, size_t maxlen,
      */
     if (max < 0)
         max = 6;
+
+    if (max >= MAXLEN)
+        max = MAXLEN;
 
     ufvalue = (fvalue >= 0 ? fvalue : -fvalue);
 
@@ -199,35 +201,6 @@ static void fmtfp (char *buffer, size_t *currlen, size_t maxlen,
 
     intpart = ufvalue;
 
-    /**
-     * CHEAT
-     */
-//    if (max > 9)
-//        max = 9;
-//    fracpart = round ((pow10(max)) * (ufvalue - intpart));
-//    long double ffracpart = 10 * (ufvalue - intpart);
-//    int zafterp = 0;
-//    while (!(int)ffracpart) {
-//        zafterp++;
-//        ffracpart *= 10;
-//    }
-
-//    if (fracpart >= pow10 (max)) {
-//        intpart++;
-//        fracpart -= pow10 (max);
-//    }
-
-    /* Convert fractional part */
-    //do {
-    //    fconvert[fplace++] =
-    //        (caps
-    //            ? "0123456789ABCDEF"
-    //            : "0123456789abcdef")[fracpart % 10];
-    //    fracpart = (fracpart / 10);
-    //} while (fracpart && (fplace < MAXLEN));
-
-    //while (zafterp-- && fplace < MAXLEN && fplace < max)
-    //    fconvert[fplace++] = '0';
     ufvalue -= (int) ufvalue;
     ufvalue *= 10;
     for (int i = 0; i < max; ++i) {
@@ -254,28 +227,22 @@ static void fmtfp (char *buffer, size_t *currlen, size_t maxlen,
             }
             --find;
         }
-        if (carry) {
-            int iind = iplace;
-            --iind;
-            while (carry && iind + 1) {
-                iconvert[iind]++;
-                if (iconvert[iind] > '9') {
-                    iconvert[iind] = '0';
-                    carry = 1;
-                } else {
-                    carry = 0;
-                }
-                --iind;
-            }
-        }
-        if (carry) {
+//        if (carry) {
+//            int iind = iplace;
+//            --iind;
+//            while (carry && iind + 1) {
+//                iconvert[iind]++;
+//                if (iconvert[iind] > '9') {
+//                    iconvert[iind] = '0';
+//                    carry = 1;
+//                } else {
+//                    carry = 0;
+//                }
+//                --iind;
+//            }
+//        }
+        if (carry)
            ++intpart;
-            /* move num */
-//            for (int r = (iplace + 1 < MAXLEN - 1)
-//                    ? iplace + 1 : MAXLEN - 1; r >= 0; r--)
-//                iconvert[iplace] = iconvert[iplace - 1];
-//            iconvert[0] = '1';
-        }
     }
 
     /* Convert integer part */
@@ -302,7 +269,6 @@ static void fmtfp (char *buffer, size_t *currlen, size_t maxlen,
     if ((flags & FLAG_ZERO) && (padlen > 0)) {
         if (signvalue) {
             print_char (buffer, currlen, maxlen, signvalue);
-            --padlen;
             signvalue = 0;
         }
         while (padlen > 0) {
@@ -325,8 +291,6 @@ static void fmtfp (char *buffer, size_t *currlen, size_t maxlen,
 
         for (int i = 0; i < fplace; ++i)
             print_char(buffer, currlen, maxlen, fconvert[i]);
-//        while (fplace > 0)
-//            print_char (buffer, currlen, maxlen, fconvert[--fplace]);
     }
 
     while (zpadlen > 0) {
@@ -437,7 +401,7 @@ static void dooo(char * s, size_t n, const char * format, va_list args) {
                         value = va_arg (args, int);
                         fmtint (s, &currlen, n, value, 10, min, max, flags);
                         break;
-                    case 'O':
+                    //case 'O':
                     case 'o':
                         flags |= FLAG_UNSIGNED;
                         value = va_arg (args, unsigned int);
